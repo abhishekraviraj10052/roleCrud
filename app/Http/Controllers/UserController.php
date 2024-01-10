@@ -26,16 +26,24 @@ class UserController extends Controller
     }
 
 
-    public function dashboard(){
+    public function dashboard(Request $request){
         $currentUser=\Auth::user();
-        $users=User::when($currentUser['role'] == 2,function($query){
-                 $query->where('role',0)
-                       ->orWhere('role',1);
-        })->when($currentUser['role'] == 1,function($query){
-            $query->where('role',0);
-        })->when($currentUser['role'] == 0,function($query) use ($currentUser){
-            $query->where('id',$currentUser['id']);
-        })->get();
+        $query=\DB::table('users');
+        $order_by=$request['order_by'] ?? 'firstname';
+        $order=$request['order'] ?? 'asc';
+        if($request['firstname'] != ''){
+            $query->where('firstname','like','%'.$request['firstname'].'%');
+        }
+        if($request['lastname'] != ''){
+            $query->where('lastname','like','%'.$request['lastname'].'%');
+        }
+        if($request['email'] != ''){
+            $query->where('email','like','%'.$request['email'].'%');
+        }
+        if($request['number'] != ''){
+            $query->where('number','like','%'.$request['number'].'%');
+        }
+        $users=$query->orderBy($order_by,$order)->simplePaginate(2)->withQueryString();
         return view('users.dashboard',compact('users'));
     }
 
