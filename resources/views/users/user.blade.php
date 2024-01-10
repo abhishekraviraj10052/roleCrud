@@ -37,9 +37,50 @@
     @error('password')
     {{$message}}
     @enderror
+    <div class="mb-3 mt-3">
+      <select class="form-control" name="role" id="role">
+        <option value="">Select role</option>
+        <option value="0">User</option>
+        <option value="1">Admin</option>
+      </select>
+    </div>
+    <div class="mb-3 mt-3" id="admin_div">
+      <select class="form-control" name="admin" id="admin">
+        <option value="">Assign admin</option>
+        @if(isset($admin))
+        @foreach($admins as $admin)
+        <option value="{{$admin->id}}">{{$admin->firstname}}</option>
+        @endforeach
+        @endif
+      </select>
+    </div>
     <div class="mb-3">
       <input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
     </div>
     <button type="submit" class="btn btn-success">Submit</button>
   </form>
 @endsection
+@push('script')
+<script>
+$(document).ready(function(){
+  $('#role').change(function(){
+    if($(this).val().trim() != ''){
+      if($(this).val() == 0){
+        $('#admin_div').show()
+      }else{
+        $('#admin_div').hide()
+      }
+    }else{
+      $('#admin_div').hide()
+    }
+  })
+})
+</script>
+@endpush
+@push('style')
+<style>
+#admin_div{
+  display:none;
+}
+</style>
+@endpush
